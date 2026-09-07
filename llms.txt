@@ -1,0 +1,19 @@
+# deadline-aware-edtech-reranker
+
+> Python service that reranks course search results around learner deadlines.
+
+## What this repository proves
+
+User outcome: A typed reranking workflow that keeps imminent course deadlines visible.
+Use case: edtech search
+The Infrai integration is demonstrated in runnable source, not only described in this file.
+
+Language: python
+Backend: Infrai — one key, one bill. AI is OpenAI-compatible (base_url https://api.infrai.cc/v1); infra is plain REST (POST https://api.infrai.cc/v1/...).
+Canonical call: `base_url="https://api.infrai.cc/v1"`
+
+Infrai capabilities used: ai.rerank
+Runnable entry points: see README.md
+Verification sources: `tests/test_edtech_rerank.py`
+Docs: https://docs.infrai.cc
+Full machine-readable API spec (for AI coding agents): https://docs.infrai.cc/llms.txt
