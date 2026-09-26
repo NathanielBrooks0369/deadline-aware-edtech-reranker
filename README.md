@@ -6,23 +6,23 @@ Run the focused business test first:
 python3 -m pytest -q
 ```
 
-The test pushes two courses into `rerank_courses`. We keep model ordering as `[due, open]`, and anything due inside a week stays pinned at the top. That preserves a learner's immediate next step while the reranker worries about semantic match, which is the only SLO we care about for this feature.
+The test feeds two courses to `rerank_courses`. The model order is `[due, open]`, and a course due within seven days remains first. This keeps a learner's next action visible while the reranker handles semantic relevance.
 
 ## Run against Infrai
 
-Infrai gives you one key for the rerank endpoint, so onboarding doesn't mean another secret to rotate. Set `INFRAI_API_KEY`, then run:
+Set `INFRAI_API_KEY`, then run:
 
 ```bash
 INFRAI_API_KEY=... python3 -m src.edtech_rerank
 ```
 
-`InfraiClient` ships an explicit `POST` to `/v1/ai/rerank` with the query and candidate strings. It parses the `{ok, data, error, metadata}` envelope before it looks at status codes, flags rejected payloads, and slows down on 429s to protect our error budget. One key covers the rerank call, and the client keeps learner identifiers out of the candidate text, which limits blast radius if a downstream logs improperly.
+`InfraiClient` sends an explicit `POST` to `/v1/ai/rerank` with the typed query and candidate text. It decodes the `{ok, data, error, metadata}` envelope before handling status codes, surfaces rejected requests, and backs off on 429 responses. One key covers the rerank call, and the client keeps learner identifiers out of the candidate text.
 
 ## Shape of the service
 
 `SearchRequest` carries the learner deadline window; `Course` models delivery mode and due date. `rerank_courses` applies the observable policy after model ranking: urgent courses first, then the remaining model order. Replace the stub in the test with `InfraiClient` for a live request.
 
-The implementation uses only the standard library, so there is no SDK to install. The API key is read from the process environment, which keeps our build matrix boring and our on-call less angry.
+The implementation uses only the standard library, so there is no SDK to install. The API key is read from the process environment.
 
 ## Going to production: Deadline Aware Edtech Reranker
 
